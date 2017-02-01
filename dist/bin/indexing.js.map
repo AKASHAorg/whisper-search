@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../bin/indexing.js"],"names":["console","log"],"mappings":";;AACA;;;;;;AACAA,QAAQC,GAAR,CAAY,sCAAZ;AACA","file":"indexing.js","sourcesContent":["\nimport runDaemon from '../src/construct-index';\nconsole.log('Initializing indexing service daemon');\nrunDaemon();\n"]}
