@@ -30,3 +30,5 @@ export const getIdentity = () => {
 };
 export const HANDSHAKE_REQUEST = '0x68616e647368616b6552657175657374';
 export const HANDSHAKE_RESPONSE = '0x68616e647368616b65526573706f6e7365';
+
+export const BLOCK_INTERVAL = 100;
