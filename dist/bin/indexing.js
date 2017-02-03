@@ -8,5 +8,11 @@ var _constructIndex2 = _interopRequireDefault(_constructIndex);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 console.log('Initializing indexing service daemon');
-(0, _constructIndex2.default)();
+var daemon = new _constructIndex2.default({ objectMode: true });
+if (process.env.PUMP_INDEX) {
+  daemon.pump();
+}
+setTimeout(function () {
+  return daemon.daemonize();
+}, 10000);
 //# sourceMappingURL=indexing.js.map

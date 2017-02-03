@@ -1,5 +1,5 @@
 import whisperSearch from '../../src/whisper-search';
-import { getIndex, source } from '../../src/indexModel';
+import { getIndex } from '../../src/indexModel';
 
 let sIndex;
 describe('whisperSearch', () => {
@@ -22,17 +22,14 @@ describe('whisperSearch', () => {
       getIndex((err, index) => {
         sIndex = index;
         expect(index).to.be.defined;
+        done();
       });
-      for (let i = 0; i < 10; i++) {
-        source.push({ a: i });
-      }
-      source.push(null);
-      setTimeout(done, 1500);
     });
 
     it('should run search query', (done) => {
-      sIndex.search({ query: { AND: { a: ['9'] } } }).on('data', function (doc) {
-        expect(doc.document).to.eql({ a: 9 });
+      sIndex.search({ query: { AND: { entryId: ['711'] } } }).on('data', function (doc) {
+        console.log(doc);
+        expect(doc.document).to.be.defined;
       }).on('end', function () {
         console.log('found?');
         done();

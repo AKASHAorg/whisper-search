@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../bin/handshake.js"],"names":["console","log"],"mappings":";;AACA;;;;;;AACAA,QAAQC,GAAR,CAAY,uCAAZ;AACA","file":"handshake.js","sourcesContent":["\nimport runDaemon from '../src/handshake';\nconsole.log('Initializing handshake service daemon');\nrunDaemon();\n"]}
