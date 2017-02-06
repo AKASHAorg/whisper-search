@@ -15,6 +15,7 @@ export default class TransportIndex extends Readable {
     this.idList = '';
     this.blockNumber = '';
     this.daemonBlock = '';
+
     getIndex((err, resp) => {
       this.indexS = resp;
     });

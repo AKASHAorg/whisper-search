@@ -7,20 +7,22 @@ const installFilter = (web3) => {
   filter.watch((err, message) => {
     const payload = web3.toUtf8(message.payload);
     let jsonPayload;
-    try{
+    try {
       jsonPayload = JSON.parse(payload);
-    }catch (err) {
+    } catch (err) {
       console.log(err);
     }
-    if(!jsonPayload || !jsonPayload.text){return;}
+    if (!jsonPayload || !jsonPayload.text) {
+      return;
+    }
     let response = new Set();
-    lvlDb.totalHits({ query: { AND: { '*': [jsonPayload.text] } }}, function (err, count) {
+    lvlDb.totalHits({ query: { AND: { '*': [jsonPayload.text] } } }, function (err, count) {
       const pageSize = (jsonPayload.pageSize) ? jsonPayload.pageSize : 20;
       lvlDb.search({ query: { AND: { '*': [jsonPayload.text] } }, pageSize: pageSize, offset: jsonPayload.offset })
         .on('data', (data) => {
           response.add(data.document.entryId);
         }).on('end', () => {
-        const results = JSON.stringify({count: count, entries: Array.from(response)});
+        const results = JSON.stringify({ count: count, entries: Array.from(response) });
         const hexResult = web3.fromUtf8(results);
         web3.shh
           .post({
@@ -46,8 +48,7 @@ const installFilter = (web3) => {
 export default function runService () {
   const web3 = getWeb3();
 
-
-  if(getIdentity()){
+  if (getIdentity()) {
     getIndex((err, resp) => {
       lvlDb = resp;
     });
@@ -57,6 +58,6 @@ export default function runService () {
   web3.shh.newIdentity((err, address) => {
     console.log('SERVICE IDENTITY ', address);
     setIdentity(address);
-    return installFilter();
+    return installFilter(web3);
   });
 }

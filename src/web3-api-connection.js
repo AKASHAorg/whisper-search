@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import net from 'net';
 
+
 export default function init () {
   const web3 = new Web3();
   const socket = new net.Socket();

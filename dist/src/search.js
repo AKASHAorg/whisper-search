@@ -64,7 +64,7 @@ function runService() {
   web3.shh.newIdentity(function (err, address) {
     console.log('SERVICE IDENTITY ', address);
     (0, _services.setIdentity)(address);
-    return installFilter();
+    return installFilter(web3);
   });
 }
 //# sourceMappingURL=search.js.map

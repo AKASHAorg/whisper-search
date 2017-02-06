@@ -18,7 +18,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var services = {
   web3: null,
   ipfs: null,
-  whisperIdentity: null
+  whisperIdentity: process.env.WHISPER_IDENTITY
 };
 
 var getWeb3 = exports.getWeb3 = function getWeb3() {

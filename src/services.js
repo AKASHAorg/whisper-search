@@ -1,25 +1,26 @@
 import web3 from './web3-api-connection';
 import ipfs from './ipfs-api-connection';
 
-const services  = {
+const services = {
   web3: null,
   ipfs: null,
-  whisperIdentity: null
+  whisperIdentity: process.env.WHISPER_IDENTITY
 };
 
-export const getWeb3 = () =>{
-  if(!services.web3){
+export const getWeb3 = () => {
+  if (!services.web3) {
     services.web3 = web3();
   }
   return services.web3;
 };
 
 export const getIpfs = () => {
-  if(!services.ipfs){
+  if (!services.ipfs) {
     services.ipfs = ipfs();
   }
   return services.ipfs;
 };
+
 
 export const setIdentity = (newIdentity) => {
   services.whisperIdentity = newIdentity;

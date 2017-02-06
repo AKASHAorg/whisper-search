@@ -44,6 +44,7 @@ var TransportIndex = function (_Readable) {
     _this.idList = '';
     _this.blockNumber = '';
     _this.daemonBlock = '';
+
     (0, _indexModel.getIndex)(function (err, resp) {
       _this.indexS = resp;
     });

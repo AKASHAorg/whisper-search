@@ -12,7 +12,7 @@ var installFilter = function installFilter(web3) {
   filter.watch(function (err, message) {
     if (!err) {
       web3.shh.post({
-        from: identity,
+        from: (0, _services.getIdentity)(),
         to: message.from,
         topics: [_services.HANDSHAKE_RESPONSE],
         payload: message.payload,
@@ -37,9 +37,10 @@ function runService() {
   }
 
   web3.shh.newIdentity(function (err, address) {
+    console.log(err, address);
     console.log('SERVICE IDENTITY ', address);
     (0, _services.setIdentity)(address);
-    return installFilter();
+    return installFilter(web3);
   });
 }
 //# sourceMappingURL=handshake.js.map
