@@ -10,7 +10,7 @@ var _services = require('./services');
 var _indexModel = require('./indexModel');
 
 var lvlDb = void 0;
-var installFilter = function installFilter(web3) {
+var installFilter = function installFilter(web3, lvlDb) {
   var filter = web3.shh.filter({ topics: [_services.SEARCH_REQUEST], to: (0, _services.getIdentity)() });
   filter.watch(function (err, message) {
     var payload = web3.toUtf8(message.payload);
@@ -56,9 +56,11 @@ function runService() {
 
   if ((0, _services.getIdentity)()) {
     (0, _indexModel.getIndex)(function (err, resp) {
+      console.log('err', err, 'resp', resp);
       lvlDb = resp;
+      installFilter(web3, resp);
     });
-    return installFilter(web3);
+    return;
   }
 
   web3.shh.newIdentity(function (err, address) {

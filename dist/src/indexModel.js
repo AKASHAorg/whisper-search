@@ -18,7 +18,7 @@ var options = { indexPath: db };
 
 var getIndex = exports.getIndex = function getIndex(cb) {
   (0, _searchIndex2.default)(options, function (err, index) {
-    cb('', index);
+    cb(err, index);
   });
 };
 

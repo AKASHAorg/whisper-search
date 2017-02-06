@@ -6,7 +6,7 @@ const options = { indexPath: db };
 
 export const getIndex = (cb) => {
   SearchIndex(options, function (err, index) {
-    cb('', index);
+    cb(err, index);
   });
 };
 

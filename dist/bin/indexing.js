@@ -13,6 +13,7 @@ if (process.env.PUMP_INDEX) {
   daemon.pump();
 }
 setTimeout(function () {
-  return daemon.daemonize();
+  daemon.daemonize();
+  daemon.enableSearch();
 }, 10000);
 //# sourceMappingURL=indexing.js.map

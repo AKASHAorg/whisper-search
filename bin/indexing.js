@@ -5,4 +5,8 @@ const daemon = new runDaemon({objectMode: true});
 if(process.env.PUMP_INDEX){
   daemon.pump();
 }
-setTimeout(()=> daemon.daemonize(), 10000);
+setTimeout(
+  ()=> {
+  daemon.daemonize();
+  daemon.enableSearch();
+}, 10000);

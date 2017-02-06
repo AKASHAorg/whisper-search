@@ -1,6 +1,6 @@
 import contracts from '@akashaproject/contracts.js';
 import { getIndex, consume } from './indexModel';
-import { getWeb3, BLOCK_INTERVAL } from './services';
+import { getWeb3, BLOCK_INTERVAL, SEARCH_REQUEST, getIdentity } from './services';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { Readable } from 'stream';
 export default class TransportIndex extends Readable {
@@ -114,6 +114,7 @@ export default class TransportIndex extends Readable {
     const watcher = this.factory.objects.entries.Publish({}, { fromBlock: this.daemonBlock, toBlock: 'latest' });
     watcher.watch((err, published) => {
       this.factory.objects.entries.getEntry.call((published.args.entryId).toString(), (e, d) => {
+        console.log('indexing entryId', (published.args.entryId).toString());
         const entryIpfs = d[2];
         const resource = this.getHash(entryIpfs);
         return this.fetchIpfs(resource, (published.args.entryId).toString()).then((ipfsData) => {
@@ -137,4 +138,53 @@ export default class TransportIndex extends Readable {
       });
     });
   }
+
+  enableSearch () {
+    console.log("Enabling search service");
+    const filter = this.web3.shh.filter({ topics: [SEARCH_REQUEST], to: getIdentity() });
+    filter.watch((err, message) => {
+      const payload = this.web3.toUtf8(message.payload);
+      let jsonPayload;
+      try {
+        jsonPayload = JSON.parse(payload);
+      } catch (err) {
+        console.log(err);
+      }
+      if (!jsonPayload || !jsonPayload.text) {
+        return;
+      }
+      let response = new Set();
+      this.indexS.totalHits({ query: { AND: { '*': [jsonPayload.text] } } }, (err, count) => {
+        const pageSize = (jsonPayload.pageSize) ? jsonPayload.pageSize : 20;
+        const offset = (jsonPayload.offset) ? jsonPayload.offset : 0;
+        this.indexS.search({
+          query: [{ AND: { '*': [jsonPayload.text] } }],
+          pageSize: pageSize,
+          offset: offset
+        })
+          .on('data', (data) => {
+            response.add(data.document.entryId);
+          }).on('end', () => {
+          const results = JSON.stringify({ count: count, entries: Array.from(response) });
+          const hexResult = this.web3.fromUtf8(results);
+          this.web3.shh
+            .post({
+              from: getIdentity(),
+              to: message.from,
+              topics: [message.payload],
+              payload: hexResult,
+              ttl: this.web3.fromDecimal(10)
+            }, (error, sent) => {
+              if (sent) {
+                console.log('search done for keyword', payload, ' with results ', results);
+              } else {
+                console.error('search error for keyword', payload, error);
+              }
+            });
+          //
+        });
+      });
+    });
+    return null;
+  };
 }

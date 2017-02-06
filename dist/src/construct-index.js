@@ -157,6 +157,7 @@ var TransportIndex = function (_Readable) {
       var watcher = this.factory.objects.entries.Publish({}, { fromBlock: this.daemonBlock, toBlock: 'latest' });
       watcher.watch(function (err, published) {
         _this5.factory.objects.entries.getEntry.call(published.args.entryId.toString(), function (e, d) {
+          console.log('indexing entryId', published.args.entryId.toString());
           var entryIpfs = d[2];
           var resource = _this5.getHash(entryIpfs);
           return _this5.fetchIpfs(resource, published.args.entryId.toString()).then(function (ipfsData) {
@@ -180,6 +181,56 @@ var TransportIndex = function (_Readable) {
           });
         });
       });
+    }
+  }, {
+    key: 'enableSearch',
+    value: function enableSearch() {
+      var _this6 = this;
+
+      console.log("Enabling search service");
+      var filter = this.web3.shh.filter({ topics: [_services.SEARCH_REQUEST], to: (0, _services.getIdentity)() });
+      filter.watch(function (err, message) {
+        var payload = _this6.web3.toUtf8(message.payload);
+        var jsonPayload = void 0;
+        try {
+          jsonPayload = JSON.parse(payload);
+        } catch (err) {
+          console.log(err);
+        }
+        if (!jsonPayload || !jsonPayload.text) {
+          return;
+        }
+        var response = new Set();
+        _this6.indexS.totalHits({ query: { AND: { '*': [jsonPayload.text] } } }, function (err, count) {
+          var pageSize = jsonPayload.pageSize ? jsonPayload.pageSize : 20;
+          var offset = jsonPayload.offset ? jsonPayload.offset : 0;
+          _this6.indexS.search({
+            query: [{ AND: { '*': [jsonPayload.text] } }],
+            pageSize: pageSize,
+            offset: offset
+          }).on('data', function (data) {
+            response.add(data.document.entryId);
+          }).on('end', function () {
+            var results = JSON.stringify({ count: count, entries: Array.from(response) });
+            var hexResult = _this6.web3.fromUtf8(results);
+            _this6.web3.shh.post({
+              from: (0, _services.getIdentity)(),
+              to: message.from,
+              topics: [message.payload],
+              payload: hexResult,
+              ttl: _this6.web3.fromDecimal(10)
+            }, function (error, sent) {
+              if (sent) {
+                console.log('search done for keyword', payload, ' with results ', results);
+              } else {
+                console.error('search error for keyword', payload, error);
+              }
+            });
+            //
+          });
+        });
+      });
+      return null;
     }
   }]);
 

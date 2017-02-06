@@ -2,7 +2,7 @@ import { getWeb3, getIdentity, setIdentity, SEARCH_REQUEST } from './services';
 import { getIndex } from './indexModel';
 
 let lvlDb;
-const installFilter = (web3) => {
+const installFilter = (web3, lvlDb) => {
   const filter = web3.shh.filter({ topics: [SEARCH_REQUEST], to: getIdentity() });
   filter.watch((err, message) => {
     const payload = web3.toUtf8(message.payload);
@@ -50,9 +50,11 @@ export default function runService () {
 
   if (getIdentity()) {
     getIndex((err, resp) => {
+      console.log('err', err, 'resp', resp);
       lvlDb = resp;
+      installFilter(web3, resp);
     });
-    return installFilter(web3);
+    return;
   }
 
   web3.shh.newIdentity((err, address) => {
