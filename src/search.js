@@ -14,30 +14,31 @@ const installFilter = (web3) => {
     }
     if(!jsonPayload || !jsonPayload.text){return;}
     let response = new Set();
-    lvlDb.search({ query: { AND: { '*': [jsonPayload.text] } } })
-      .on('data', (data) => {
-        response.add(data.document.entryId);
-      }).on('end', () => {
-      const results = Array.from(response);
-      //
+    lvlDb.totalHits({ query: { AND: { '*': [jsonPayload.text] } }}, function (err, count) {
+      const pageSize = (jsonPayload.pageSize) ? jsonPayload.pageSize : 20;
+      lvlDb.search({ query: { AND: { '*': [jsonPayload.text] } }, pageSize: pageSize, offset: jsonPayload.offset })
+        .on('data', (data) => {
+          response.add(data.document.entryId);
+        }).on('end', () => {
+        const results = JSON.stringify({count: count, entries: Array.from(response)});
+        const hexResult = web3.fromUtf8(results);
+        web3.shh
+          .post({
+            from: identity,
+            to: message.from,
+            topics: [message.payload],
+            payload: hexResult,
+            ttl: web3.fromDecimal(10)
+          }, (error, sent) => {
+            if (sent) {
+              console.log('search done for keyword', payload, ' with results ', results);
+            } else {
+              console.error('search error for keyword', payload, error);
+            }
+          });
+        //
+      });
     });
-
-    if (!err) {
-      web3.shh
-        .post({
-          from: identity,
-          to: message.from,
-          topics: [SEARCH_REQUEST],
-          payload: message.payload,
-          ttl: web3.fromDecimal(10)
-        }, (error, sent) => {
-          if (sent) {
-            console.log('Handshake done with', message.from);
-          } else {
-            console.error('Handshake error', error);
-          }
-        });
-    }
   });
   return null;
 };

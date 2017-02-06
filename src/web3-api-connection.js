@@ -4,7 +4,7 @@ import net from 'net';
 export default function init () {
   const web3 = new Web3();
   const socket = new net.Socket();
-  const ipcPath = process.env.GETH_IPC_PATH;
+  const ipcPath = process.env.GETH_IPC_PATH; //
 
   socket.setTimeout(0);
   socket.setEncoding('utf8');

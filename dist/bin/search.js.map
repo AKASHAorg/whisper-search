@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../bin/search.js"],"names":["console","log"],"mappings":";;AACA;;;;;;AACAA,QAAQC,GAAR,CAAY,oCAAZ;AACA","file":"search.js","sourcesContent":["\nimport searchDaemon from '../src/search';\nconsole.log('Initializing search service daemon');\nsearchDaemon();\n"]}
