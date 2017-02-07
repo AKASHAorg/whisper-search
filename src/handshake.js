@@ -1,8 +1,8 @@
-import { getWeb3, getIdentity, setIdentity, HANDSHAKE_REQUEST, HANDSHAKE_RESPONSE } from './services';
+import { getWeb3, getIdentity, setIdentity, services, HANDSHAKE_REQUEST, HANDSHAKE_RESPONSE } from './services';
 
 
 const installFilter = (web3) => {
-  const filter = web3.shh.filter({ topics: [HANDSHAKE_REQUEST], to: getIdentity() });
+  const filter = web3.shh.filter({ topics: [HANDSHAKE_REQUEST] });
   filter.watch((err, message) => {
     if (!err) {
       web3.shh
@@ -27,7 +27,7 @@ const installFilter = (web3) => {
 export default function runService () {
   const web3 = getWeb3();
 
-  if (getIdentity()) {
+  if (services.whisperIdentity) {
     return installFilter(web3);
   }
 

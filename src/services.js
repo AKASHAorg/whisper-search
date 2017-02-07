@@ -1,10 +1,12 @@
 import web3 from './web3-api-connection';
 import ipfs from './ipfs-api-connection';
+import { writeFileSync, readFileSync } from 'fs';
+import { join } from 'path';
 
-const services = {
+export const services = {
   web3: null,
   ipfs: null,
-  whisperIdentity: process.env.WHISPER_IDENTITY
+  whisperIdentity: null
 };
 
 export const getWeb3 = () => {
@@ -21,12 +23,18 @@ export const getIpfs = () => {
   return services.ipfs;
 };
 
+const token = Buffer.from((new Date()).toDateString());
+const segment = join(__dirname, 'identities');
+const file = join(segment, token.toString('hex') + '_identity.json');
 
 export const setIdentity = (newIdentity) => {
-  services.whisperIdentity = newIdentity;
+  return writeFileSync(file, newIdentity);
 };
 
 export const getIdentity = () => {
+  if (!services.whisperIdentity) {
+    services.whisperIdentity = readFileSync(file, 'utf8');
+  }
   return services.whisperIdentity;
 };
 export const HANDSHAKE_REQUEST = '0x68616e647368616b6552657175657374';

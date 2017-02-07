@@ -8,7 +8,7 @@ exports.default = runService;
 var _services = require('./services');
 
 var installFilter = function installFilter(web3) {
-  var filter = web3.shh.filter({ topics: [_services.HANDSHAKE_REQUEST], to: (0, _services.getIdentity)() });
+  var filter = web3.shh.filter({ topics: [_services.HANDSHAKE_REQUEST] });
   filter.watch(function (err, message) {
     if (!err) {
       web3.shh.post({
@@ -32,7 +32,7 @@ var installFilter = function installFilter(web3) {
 function runService() {
   var web3 = (0, _services.getWeb3)();
 
-  if ((0, _services.getIdentity)()) {
+  if (_services.services.whisperIdentity) {
     return installFilter(web3);
   }
 
