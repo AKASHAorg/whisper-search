@@ -1,7 +1,7 @@
 import { join } from 'path';
 import SearchIndex from 'search-index';
 
-export const db = (process.env.SEARCH_DB_PATH) ? process.env.SEARCH_DB_PATH : join(__dirname, 'db');
+export const db = (process.env.SEARCH_DB_PATH) ? process.env.SEARCH_DB_PATH : join(__dirname, '../../db');
 const options = { indexPath: db };
 
 export const getIndex = (cb) => {

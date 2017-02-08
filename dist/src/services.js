@@ -40,7 +40,7 @@ var getIpfs = exports.getIpfs = function getIpfs() {
 };
 
 var token = Buffer.from(new Date().toDateString());
-var segment = (0, _path.join)(__dirname, 'identities');
+var segment = (0, _path.join)(__dirname, '../../identities');
 var file = (0, _path.join)(segment, token.toString('hex') + '_identity.json');
 
 var setIdentity = exports.setIdentity = function setIdentity(newIdentity) {

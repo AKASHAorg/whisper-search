@@ -9,6 +9,7 @@ var _services = require('./services');
 
 var _indexModel = require('./indexModel');
 
+// NOT HERE
 var lvlDb = void 0;
 var installFilter = function installFilter(web3, lvlDb) {
   var filter = web3.shh.filter({ topics: [_services.SEARCH_REQUEST], to: (0, _services.getIdentity)() });
@@ -24,9 +25,13 @@ var installFilter = function installFilter(web3, lvlDb) {
       return;
     }
     var response = new Set();
-    lvlDb.totalHits({ query: { AND: { '*': [jsonPayload.text] } } }, function (err, count) {
-      var pageSize = jsonPayload.pageSize ? jsonPayload.pageSize : 20;
-      lvlDb.search({ query: { AND: { '*': [jsonPayload.text] } }, pageSize: pageSize, offset: jsonPayload.offset }).on('data', function (data) {
+    var pageSize = jsonPayload.pageSize ? jsonPayload.pageSize : 20;
+    var offset = jsonPayload.offset ? jsonPayload.offset : 0;
+
+    lvlDb.totalHits({ query: [{ AND: { '*': [jsonPayload.text] } }] }, function (err, count) {
+      lvlDb.search({ query: [{ AND: { '*': [jsonPayload.text] } }], pageSize: pageSize, offset: offset }).on('data', function (data) {
+        console.log(data);
+        console.log('pipe data ', data.document.entryId);
         response.add(data.document.entryId);
       }).on('end', function () {
         var results = JSON.stringify({ count: count, entries: Array.from(response) });
@@ -39,7 +44,7 @@ var installFilter = function installFilter(web3, lvlDb) {
           ttl: web3.fromDecimal(10)
         }, function (error, sent) {
           if (sent) {
-            console.log('search done for keyword', payload, ' with results ', results);
+            console.log('search fs asdasdsadas done for keyword', payload, ' with results ', results);
           } else {
             console.error('search error for keyword', payload, error);
           }

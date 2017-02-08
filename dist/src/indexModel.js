@@ -13,7 +13,7 @@ var _searchIndex2 = _interopRequireDefault(_searchIndex);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var db = exports.db = process.env.SEARCH_DB_PATH ? process.env.SEARCH_DB_PATH : (0, _path.join)(__dirname, 'db');
+var db = exports.db = process.env.SEARCH_DB_PATH ? process.env.SEARCH_DB_PATH : (0, _path.join)(__dirname, '../../db');
 var options = { indexPath: db };
 
 var getIndex = exports.getIndex = function getIndex(cb) {

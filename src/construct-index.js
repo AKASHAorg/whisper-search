@@ -154,8 +154,8 @@ export default class TransportIndex extends Readable {
         return;
       }
       let response = new Set();
-      this.indexS.totalHits({ query: { AND: { '*': [jsonPayload.text] } } }, (err, count) => {
-        const pageSize = (jsonPayload.pageSize) ? jsonPayload.pageSize : 20;
+      this.indexS.totalHits({ query: [{ AND: { '*': [jsonPayload.text] } }] }, (err, count) => {
+        const pageSize = (count > 100) ? 100: count;
         const offset = (jsonPayload.offset) ? jsonPayload.offset : 0;
         this.indexS.search({
           query: [{ AND: { '*': [jsonPayload.text] } }],
@@ -165,7 +165,7 @@ export default class TransportIndex extends Readable {
           .on('data', (data) => {
             response.add(data.document.entryId);
           }).on('end', () => {
-          const results = JSON.stringify({ count: count, entries: Array.from(response) });
+          const results = JSON.stringify({ count: response.size, entries: Array.from(response) });
           const hexResult = this.web3.fromUtf8(results);
           this.web3.shh
             .post({
@@ -176,7 +176,7 @@ export default class TransportIndex extends Readable {
               ttl: this.web3.fromDecimal(10)
             }, (error, sent) => {
               if (sent) {
-                console.log('search done for keyword', payload, ' with results ', results);
+                console.log('search done for keyword', payload, ' with results ', pageSize);
               } else {
                 console.error('search error for keyword', payload, error);
               }

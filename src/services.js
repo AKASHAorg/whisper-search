@@ -24,7 +24,7 @@ export const getIpfs = () => {
 };
 
 const token = Buffer.from((new Date()).toDateString());
-const segment = join(__dirname, 'identities');
+const segment = join(__dirname, '../../identities');
 const file = join(segment, token.toString('hex') + '_identity.json');
 
 export const setIdentity = (newIdentity) => {

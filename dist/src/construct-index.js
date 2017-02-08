@@ -201,8 +201,8 @@ var TransportIndex = function (_Readable) {
           return;
         }
         var response = new Set();
-        _this6.indexS.totalHits({ query: { AND: { '*': [jsonPayload.text] } } }, function (err, count) {
-          var pageSize = jsonPayload.pageSize ? jsonPayload.pageSize : 20;
+        _this6.indexS.totalHits({ query: [{ AND: { '*': [jsonPayload.text] } }] }, function (err, count) {
+          var pageSize = count > 100 ? 100 : count;
           var offset = jsonPayload.offset ? jsonPayload.offset : 0;
           _this6.indexS.search({
             query: [{ AND: { '*': [jsonPayload.text] } }],
@@ -211,7 +211,7 @@ var TransportIndex = function (_Readable) {
           }).on('data', function (data) {
             response.add(data.document.entryId);
           }).on('end', function () {
-            var results = JSON.stringify({ count: count, entries: Array.from(response) });
+            var results = JSON.stringify({ count: response.size, entries: Array.from(response) });
             var hexResult = _this6.web3.fromUtf8(results);
             _this6.web3.shh.post({
               from: (0, _services.getIdentity)(),
@@ -221,7 +221,7 @@ var TransportIndex = function (_Readable) {
               ttl: _this6.web3.fromDecimal(10)
             }, function (error, sent) {
               if (sent) {
-                console.log('search done for keyword', payload, ' with results ', results);
+                console.log('search done for keyword', payload, ' with results ', pageSize);
               } else {
                 console.error('search error for keyword', payload, error);
               }
