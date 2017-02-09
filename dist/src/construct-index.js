@@ -201,11 +201,13 @@ var TransportIndex = function (_Readable) {
           return;
         }
         var response = new Set();
-        _this6.indexS.totalHits({ query: [{ AND: { '*': [jsonPayload.text] } }] }, function (err, count) {
+        _this6.indexS.totalHits({
+          query: [{ AND: { 'title': [jsonPayload.text] } }, { AND: { 'body': [jsonPayload.text] } }]
+        }, function (err, count) {
           var pageSize = count > 100 ? 100 : count;
           var offset = jsonPayload.offset ? jsonPayload.offset : 0;
           _this6.indexS.search({
-            query: [{ AND: { '*': [jsonPayload.text] } }],
+            query: [{ AND: { 'title': [jsonPayload.text] }, BOOST: 10 }, { AND: { 'body': [jsonPayload.text] } }],
             pageSize: pageSize,
             offset: offset
           }).on('data', function (data) {

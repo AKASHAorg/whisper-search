@@ -154,11 +154,19 @@ export default class TransportIndex extends Readable {
         return;
       }
       let response = new Set();
-      this.indexS.totalHits({ query: [{ AND: { '*': [jsonPayload.text] } }] }, (err, count) => {
-        const pageSize = (count > 100) ? 100: count;
+      this.indexS.totalHits({
+        query: [
+          { AND: { 'title': [jsonPayload.text] } },
+          { AND: { 'body': [jsonPayload.text] } }
+        ]
+      }, (err, count) => {
+        const pageSize = (count > 100) ? 100 : count;
         const offset = (jsonPayload.offset) ? jsonPayload.offset : 0;
         this.indexS.search({
-          query: [{ AND: { '*': [jsonPayload.text] } }],
+          query: [
+            { AND: { 'title': [jsonPayload.text] }, BOOST: 10 },
+            { AND: { 'body': [jsonPayload.text] } }
+          ],
           pageSize: pageSize,
           offset: offset
         })
